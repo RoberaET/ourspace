@@ -59,7 +59,7 @@ const Dates = () => {
 
       <div className="card" style={{ marginBottom: 32 }}>
         <form onSubmit={addDate} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div className="flex-responsive">
             <input 
               type="text" 
               className="input" 
@@ -76,7 +76,7 @@ const Dates = () => {
               onChange={(e) => setNewDate(e.target.value)}
             />
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div className="flex-responsive">
              <input 
               type="text" 
               className="input bg-input" 

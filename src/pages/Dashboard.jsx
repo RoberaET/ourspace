@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [relationship, setRelationship] = useState(null);
   const [myMood, setMyMood] = useState(null);
   const [partnerMood, setPartnerMood] = useState(null);
+  const [partnerProfile, setPartnerProfile] = useState(null);
   const [distance, setDistance] = useState(null);
   const [memory, setMemory] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -37,11 +38,14 @@ const Dashboard = () => {
         }
       }
 
-      // 3. Distance
-      if (profile?.partner_id && profile?.lat && profile?.lng) {
-        const { data: pData } = await supabase.from('profiles').select('lat, lng').eq('id', profile.partner_id).single();
-        if (pData?.lat && pData?.lng) {
-          setDistance(calculateDistance(profile.lat, profile.lng, pData.lat, pData.lng).toFixed(1));
+      // 3. Partner Profile & Distance
+      if (profile?.partner_id) {
+        const { data: pData } = await supabase.from('profiles').select('*').eq('id', profile.partner_id).single();
+        if (pData) {
+           setPartnerProfile(pData);
+           if (profile.lat && profile.lng && pData.lat && pData.lng) {
+             setDistance(calculateDistance(profile.lat, profile.lng, pData.lat, pData.lng).toFixed(1));
+           }
         }
       }
 
@@ -113,11 +117,11 @@ const Dashboard = () => {
 
       <div style={{ textAlign: 'center', marginBottom: 60 }}>
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24, position: 'relative' }}>
-          <div style={{ width: 120, height: 120, borderRadius: '50%', background: '#2f4340', overflow: 'hidden', position: 'relative', zIndex: 1, border: '4px solid var(--bg-main)' }}>
-             <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=transparent" alt="H" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'var(--bg-sidebar)', overflow: 'hidden', position: 'relative', zIndex: 1, border: '4px solid var(--bg-main)' }}>
+             <img src={profile?.avatar_url || "https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=transparent"} alt="Me" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
-          <div style={{ width: 120, height: 120, borderRadius: '50%', background: '#f5b597', overflow: 'hidden', marginLeft: '-30px', position: 'relative', zIndex: 2, border: '4px solid var(--bg-main)' }}>
-             <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=transparent" alt="K" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'var(--bg-card-highlight)', overflow: 'hidden', marginLeft: '-30px', position: 'relative', zIndex: 2, border: '4px solid var(--bg-main)' }}>
+             <img src={partnerProfile?.avatar_url || "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=transparent"} alt="Partner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </div>
         
@@ -187,12 +191,12 @@ const Dashboard = () => {
           </div>
 
           {/* Mood Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="grid-responsive">
             
             {/* My Mood */}
             <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 16px' }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#2c303a', position: 'relative', marginBottom: 16 }}>
-                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=transparent" alt="Mine" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg-sidebar)', position: 'relative', marginBottom: 16 }}>
+                 <img src={profile?.avatar_url || "https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=transparent"} alt="Mine" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                  <div style={{ position: 'absolute', bottom: -2, right: -2, background: 'var(--bg-card)', borderRadius: '50%', padding: 2 }}>
                    <div style={{ background: '#f5b597', width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{myState.icon}</div>
                  </div>
@@ -209,8 +213,8 @@ const Dashboard = () => {
 
             {/* Partner Mood */}
             <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 16px' }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#2c2530', position: 'relative', marginBottom: 16 }}>
-                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=transparent" alt="Partner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg-sidebar)', position: 'relative', marginBottom: 16 }}>
+                 <img src={partnerProfile?.avatar_url || "https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=transparent"} alt="Partner" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                  <div style={{ position: 'absolute', bottom: -2, right: -2, background: 'var(--bg-card)', borderRadius: '50%', padding: 2 }}>
                    <div style={{ background: '#4a6fa5', width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{pState.icon}</div>
                  </div>

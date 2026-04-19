@@ -79,14 +79,11 @@ const Layout = ({ children }) => {
             <MessageCircle size={18} />
             <span>Reflections</span>
           </Link>
-        </nav>
-
-        <div className="sidebar-footer">
           <Link to="/settings" className={`nav-item ${path === '/settings' ? 'active' : ''}`}>
              <SettingsIcon size={18} />
              <span>Settings</span>
           </Link>
-        </div>
+        </nav>
       </aside>
       
       {/* Main Content Area */}

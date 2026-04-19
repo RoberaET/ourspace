@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { useAuth } from '../context/AuthContext';
-import { Plus, MessageSquare, CheckCircle2, Circle } from 'lucide-react';
+import { Plus, MessageSquare, CheckCircle2, Circle, Trash2 } from 'lucide-react';
 
 const ActivityChart = ({ disagreements }) => {
   // Generate last 182 days (26 weeks)
@@ -138,6 +138,11 @@ const Disagreements = () => {
     await supabase.from('disagreements').update({ resolved: !currentStatus }).eq('id', id);
   };
 
+  const deleteDisagreement = async (id) => {
+    setDisagreements(disagreements.filter(d => d.id !== id));
+    await supabase.from('disagreements').delete().eq('id', id);
+  };
+
   return (
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="section-title">
@@ -156,7 +161,7 @@ const Disagreements = () => {
           <div className="card" style={{ marginBottom: 24, border: '1px solid var(--color-primary)' }}>
             <h3 style={{ fontSize: 18, marginBottom: 16 }}>Log a Disagreement</h3>
             <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 12 }}>
+              <div className="flex-responsive">
                 <input 
                   type="text" className="input bg-input" placeholder="What was it about? (e.g. Dishes)" 
                   value={topic} onChange={(e) => setTopic(e.target.value)} required style={{ flex: 2, marginBottom: 0 }}
@@ -192,17 +197,26 @@ const Disagreements = () => {
                      <h3 style={{ fontSize: 18, fontWeight: 600, color: d.resolved ? 'var(--text-dim)' : 'var(--text-primary)' }}>{d.topic}</h3>
                      <span style={{ fontSize: 13, color: 'var(--text-dim)' }}>{new Date(d.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                    </div>
-                   <button 
-                     onClick={() => toggleResolve(d.id, d.resolved)}
-                     title="Mark as resolved"
-                     style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: d.resolved ? 'var(--text-muted)' : 'var(--text-primary)' }}
-                   >
-                     {d.resolved ? <CheckCircle2 color="var(--color-primary)" /> : <Circle color="var(--text-dim)" />}
-                     <span style={{ fontSize: 13 }}>{d.resolved ? 'Resolved' : 'Needs Repair'}</span>
-                   </button>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                     <button 
+                       onClick={() => toggleResolve(d.id, d.resolved)}
+                       title="Mark as resolved"
+                       style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: d.resolved ? 'var(--text-muted)' : 'var(--text-primary)' }}
+                     >
+                       {d.resolved ? <CheckCircle2 color="var(--color-primary)" size={18} /> : <Circle color="var(--text-dim)" size={18} />}
+                       <span style={{ fontSize: 13 }}>{d.resolved ? 'Resolved' : 'Needs Repair'}</span>
+                     </button>
+                     <button 
+                       onClick={() => deleteDisagreement(d.id)}
+                       title="Delete entry"
+                       style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--text-muted)' }}
+                     >
+                       <Trash2 size={16} />
+                     </button>
+                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div className="grid-responsive">
                    {/* Partner 1 (Creator) */}
                    <div style={{ background: 'var(--bg-main)', padding: 16, borderRadius: 12 }}>
                      <div style={{ fontSize: 12, textTransform: 'uppercase', color: 'var(--text-dim)', letterSpacing: '1px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>

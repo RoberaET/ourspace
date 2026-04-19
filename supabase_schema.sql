@@ -13,8 +13,12 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     invite_code TEXT UNIQUE,
     age INTEGER,
     location_name TEXT,
+    avatar_url TEXT,
     onboarded BOOLEAN DEFAULT false
 );
+
+-- Upgrade existing tables if run repeatedly
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
